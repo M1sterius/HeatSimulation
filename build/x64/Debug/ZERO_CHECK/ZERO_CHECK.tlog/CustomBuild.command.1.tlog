@@ -1,0 +1,10 @@
+^D:\CODING PROJECTS\HEATSIMULATION\BUILD\CMAKEFILES\3B6DEC3BFE141B37561E031C6A301739\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" "-SD:/Coding Projects/HeatSimulation" "-BD:/Coding Projects/HeatSimulation/build" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "D:/Coding Projects/HeatSimulation/build/HeatSimulation.sln"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
