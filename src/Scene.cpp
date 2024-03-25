@@ -25,22 +25,43 @@ void Scene::Update()
 
     // Integration ---------------------------------
     for (size_t i = 0; i < m_Particles.size(); i++)
-    {
+    {   
         std::shared_ptr<Particle> particle = m_Particles[i];
-        particle->AddVelocity(glm::vec2(0, 981 * m_DeltaTime));
+        //particle->AddVelocity(glm::vec2(0, 981) * m_DeltaTime);
         particle->AddPosition(particle->GetVelocity() * m_DeltaTime);
-    }   
+    }
     // ---------------------------------------------
 
     // Bounds --------------------------------------
     for (size_t i = 0; i < m_Particles.size(); i++)
     {
         std::shared_ptr<Particle> particle = m_Particles[i];
-        if (particle->GetPosition().y > 700)
-        {   
-            float pd = particle->GetPosition().y - 700;
-            particle->SetPosition(particle->GetPosition() - glm::vec2(0, pd));
-            particle->SetVelocity(-particle->GetVelocity() * 0.8f);
+        const glm::vec2 vertBounds = glm::vec2(0, 1280);
+        const glm::vec2 horizBounds = glm::vec2(0, 720);
+
+        glm::vec2 pos = particle->GetPosition();
+        glm::vec2 vel = particle->GetVelocity();
+        float r = particle->GetRadius();
+
+        if (pos.x < vertBounds.x + r)
+        {
+            particle->SetVelocity(glm::vec2(-vel.x, vel.y) * 0.8f);
+            particle->AddPosition(glm::vec2(5, 0));
+        }
+        else if (pos.x > vertBounds.y - r)
+        {
+            particle->SetVelocity(glm::vec2(-vel.x, vel.y) * 0.8f);
+            particle->AddPosition(glm::vec2(-5, 0));
+        }
+        else if (pos.y < horizBounds.x + r)
+        {
+            particle->SetVelocity(glm::vec2(vel.x, -vel.y) * 0.8f);
+            particle->AddPosition(glm::vec2(0, 5));
+        }
+        else if (pos.y > horizBounds.y - r)
+        {
+            particle->SetVelocity(glm::vec2(vel.x, -vel.y) * 0.8f);
+            particle->AddPosition(glm::vec2(0, -5));
         }
     }
     // ---------------------------------------------
@@ -56,7 +77,7 @@ void Scene::Update()
             Manifold mf;
 
             if (CheckCollision(p1, p2, mf))
-                ResolveCollision(mf);
+                 ResolveCollision(mf);
         }
     }
     // ---------------------------------------------

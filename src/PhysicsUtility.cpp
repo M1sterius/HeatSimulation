@@ -1,6 +1,7 @@
 #include "PhysicsUtility.hpp"
 
 #include <iostream>
+#include <memory>
 
 Manifold::Manifold()
 {
@@ -37,8 +38,27 @@ bool CheckCollision(const std::shared_ptr<Particle> p1, const std::shared_ptr<Pa
 }
 
 void ResolveCollision(const Manifold& manifold)
-{
-    std::cout << "Collide" << '\n';
+{   
+    std::shared_ptr<Particle> p1 = manifold.p1;
+    std::shared_ptr<Particle> p2 = manifold.p2;
+    glm::vec2 normal = manifold.normal;
+
+    glm::vec2 rv = p2->GetVelocity() - p1->GetVelocity();
+    float rvAlongNormal = rv.x * normal.x + rv.y * normal.y;
+
+    if (rvAlongNormal < 0)
+    {
+        float impulseMagnitude = -1.8f * rvAlongNormal / (1.0f / p1->mass + 1.0f / p2->mass);
+
+        glm::vec2 impulse = impulseMagnitude * normal;
+
+        p1->AddVelocity(-impulse / p1->mass);
+        p2->AddVelocity(impulse / p2->mass);
+
+        glm::vec2 separation = 0.5f * manifold.penetrationDepth * normal;
+        p1->AddPosition(separation);
+        p1->AddPosition(-separation);
+    }
 }
 
 

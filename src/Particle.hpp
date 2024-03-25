@@ -12,6 +12,8 @@ private:
     float m_Radius;
     sf::CircleShape m_Shape;
 public:
+    float mass = 1.0f;
+
     Particle(const float& radius);
     ~Particle();
 
