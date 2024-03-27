@@ -20,4 +20,6 @@ public:
 
     void Update();
     void Render(sf::RenderWindow& window);
+
+    inline size_t GetParticlesCount() const {return m_Particles.size(); }
 };

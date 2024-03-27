@@ -16,5 +16,4 @@ struct Manifold
     ~Manifold();
 };
 
-bool CheckCollision(const std::shared_ptr<Particle> p1, const std::shared_ptr<Particle> p2, Manifold& manifold);
-void ResolveCollision(const Manifold& manifold);
+void SolveCollision(std::shared_ptr<Particle> p1, std::shared_ptr<Particle> p2);

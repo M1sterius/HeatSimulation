@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <iostream>
+#include <math.h>
 
 Scene::Scene()
 {
@@ -27,8 +28,8 @@ void Scene::Update()
     for (size_t i = 0; i < m_Particles.size(); i++)
     {   
         std::shared_ptr<Particle> particle = m_Particles[i];
-        //particle->AddVelocity(glm::vec2(0, 981) * m_DeltaTime);
-        particle->AddPosition(particle->GetVelocity() * m_DeltaTime);
+        particle->Accelerate(glm::vec2(0, 500));
+        particle->Integrate(m_DeltaTime);
     }
     // ---------------------------------------------
 
@@ -40,28 +41,27 @@ void Scene::Update()
         const glm::vec2 horizBounds = glm::vec2(0, 720);
 
         glm::vec2 pos = particle->GetPosition();
-        glm::vec2 vel = particle->GetVelocity();
         float r = particle->GetRadius();
 
-        if (pos.x < vertBounds.x + r)
+        if (pos.x < (vertBounds.x + r))
         {
-            particle->SetVelocity(glm::vec2(-vel.x, vel.y) * 0.8f);
-            particle->AddPosition(glm::vec2(5, 0));
+            glm::vec2 sep = glm::vec2((vertBounds.x + r) - pos.x, 0.0f);
+            particle->AddCurrentPosition(sep);
         }
-        else if (pos.x > vertBounds.y - r)
+        if (pos.x > (vertBounds.y - r))
         {
-            particle->SetVelocity(glm::vec2(-vel.x, vel.y) * 0.8f);
-            particle->AddPosition(glm::vec2(-5, 0));
+            glm::vec2 sep = glm::vec2(pos.x - (vertBounds.y - r), 0);
+            particle->AddCurrentPosition(-sep);
         }
-        else if (pos.y < horizBounds.x + r)
+        if (pos.y < (horizBounds.x + r))
         {
-            particle->SetVelocity(glm::vec2(vel.x, -vel.y) * 0.8f);
-            particle->AddPosition(glm::vec2(0, 5));
+            glm::vec2 sep = glm::vec2(0, (horizBounds.x + r) - pos.y);
+            particle->AddCurrentPosition(sep);
         }
-        else if (pos.y > horizBounds.y - r)
+        if (pos.y > (horizBounds.y - r))
         {
-            particle->SetVelocity(glm::vec2(vel.x, -vel.y) * 0.8f);
-            particle->AddPosition(glm::vec2(0, -5));
+            glm::vec2 sep = glm::vec2(0, pos.y - (horizBounds.y - r));
+            particle->AddCurrentPosition(-sep);
         }
     }
     // ---------------------------------------------
@@ -76,12 +76,12 @@ void Scene::Update()
 
             Manifold mf;
 
-            if (CheckCollision(p1, p2, mf))
-                 ResolveCollision(mf);
+            SolveCollision(p1, p2);
         }
     }
     // ---------------------------------------------
-
+    
+    //std::cout << 1 / m_DeltaTime << '\n';
     m_DeltaTime = deltaTimeClock.restart().asSeconds();
 }
 
@@ -92,5 +92,4 @@ void Scene::Render(sf::RenderWindow& window)
         std::shared_ptr<Particle> particle = m_Particles[i];
         window.draw(particle->GetShape());
     }
-    
 }
