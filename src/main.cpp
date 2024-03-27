@@ -15,16 +15,6 @@ int main()
 
     Scene scene = Scene();
 
-    std::shared_ptr<Particle> particle = std::make_shared<Particle>(10);
-    particle->SetPosition(glm::vec2(110, 100));
-    //particle->isStatic = true;
-
-    std::shared_ptr<Particle> particle1 = std::make_shared<Particle>(10);
-    particle1->SetPosition(glm::vec2(1180, 100));
-
-    scene.AddParticle(particle);
-    scene.AddParticle(particle1);
-
     // sf::Font font;
     // font.loadFromFile("arial.ttf");
 
@@ -35,16 +25,26 @@ int main()
     // text.setFillColor(sf::Color::Green);
     // text.setPosition(10, 10);
 
-    const size_t particlesNumber = 50;
-    for (size_t i = 0; i < std::round(std::sqrt(particlesNumber)); i++)
+    // const size_t particlesNumber = 50;
+    // for (size_t i = 0; i < std::round(std::sqrt(particlesNumber)); i++)
+    // {
+    //     for (size_t j = 0; j < std::round(std::sqrt(particlesNumber)); j++)
+    //     {
+    //         std::shared_ptr<Particle> particle = std::make_shared<Particle>(10);
+    //         particle->SetPosition(glm::vec2(40, 40) + glm::vec2(i, j) * 40.0f);
+    //         //particle->Accelerate(glm::vec2(1, 1) * 300.0f);
+    //         scene.AddParticle(particle);
+    //     }
+    // }
+
+    for (size_t i = 0; i < 31; i++)
     {
-        for (size_t j = 0; j < std::round(std::sqrt(particlesNumber)); j++)
-        {
-            std::shared_ptr<Particle> particle = std::make_shared<Particle>(10);
-            particle->SetPosition(glm::vec2(40, 40) + glm::vec2(i, j) * 40.0f);
-            //particle->Accelerate(glm::vec2(1, 1) * 300.0f);
-            scene.AddParticle(particle);
-        }
+        std::shared_ptr<Particle> particle = std::make_shared<Particle>(10);
+        particle->SetPosition(glm::vec2(40, 710) + glm::vec2(i, 0) * 40.0f);
+        particle->SetTemperature(100.0f);
+        particle->isStatic = true;
+        particle->isConstHeat = true;
+        scene.AddParticle(particle);
     }
 
     while (window.isOpen())

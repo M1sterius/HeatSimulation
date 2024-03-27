@@ -12,23 +12,29 @@ private:
 
     float m_Radius;
     sf::CircleShape m_Shape;
+
+    float m_Temperature = 100.0f;
+    
 public:
     bool isStatic = false;
-    float mass = 1.0f;
-    float temperature = 50.0f;
+    bool isConstHeat = false;
+    float heatTransferCoeff = 0.3f;
 
     Particle(const float& radius);
     ~Particle();
 
     void Integrate(const float dt);
     void Accelerate(const glm::vec2& accel);
+    void ApplyHeat(const float dt);
 
+    void SetTemperature(const float temperature);
     void SetPosition(const glm::vec2& nPos);
     void AddPosition(const glm::vec2& pos);
     void AddCurrentPosition(const glm::vec2& nPos);
 
     glm::vec2 GetPosition();
     glm::vec2 GetVelocity();
+    inline float GetTemperature() const { return m_Temperature; }
 
     inline float GetRadius() const { return m_Radius; }
 

@@ -28,6 +28,7 @@ void Scene::Update()
     for (size_t i = 0; i < m_Particles.size(); i++)
     {   
         std::shared_ptr<Particle> particle = m_Particles[i];
+        particle->ApplyHeat(m_DeltaTime);
         particle->Accelerate(glm::vec2(0, 500));
         particle->Integrate(m_DeltaTime);
     }
@@ -76,7 +77,8 @@ void Scene::Update()
 
             Manifold mf;
 
-            SolveCollision(p1, p2);
+            if (SolveCollision(p1, p2))
+                ConductHeat(p1, p2);
         }
     }
     // ---------------------------------------------

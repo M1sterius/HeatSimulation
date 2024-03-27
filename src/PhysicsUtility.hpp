@@ -1,5 +1,6 @@
 #pragma once
 
+#include "SFML/Graphics.hpp"
 #include "Particle.hpp"
 #include "glm.hpp"
 
@@ -16,4 +17,6 @@ struct Manifold
     ~Manifold();
 };
 
-void SolveCollision(std::shared_ptr<Particle> p1, std::shared_ptr<Particle> p2);
+bool SolveCollision(std::shared_ptr<Particle> p1, std::shared_ptr<Particle> p2);
+void ConductHeat(std::shared_ptr<Particle> p1, std::shared_ptr<Particle> p2);
+sf::Color GetTemperatureColor(float temp);

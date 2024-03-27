@@ -1,4 +1,5 @@
 #include "Particle.hpp"
+#include "PhysicsUtility.hpp"
 
 Particle::Particle(const float& radius)
 {   
@@ -9,6 +10,7 @@ Particle::Particle(const float& radius)
     
     m_Shape = sf::CircleShape(radius);
     m_Shape.setPosition(sf::Vector2f(m_CurrentPosition.x - m_Radius, m_CurrentPosition.y - m_Radius));
+    m_Shape.setFillColor(GetTemperatureColor(m_Temperature));
 }
 
 Particle::~Particle()
@@ -32,6 +34,26 @@ void Particle::Integrate(const float dt)
 void Particle::Accelerate(const glm::vec2& accel)
 {
     m_Acceleration += accel;
+}
+
+void Particle::ApplyHeat(const float dt)
+{   
+    // Convection force
+    float t = std::max(0.0f, m_Temperature / 100.0f);
+    Accelerate(glm::vec2(0, -1300.0f) * t);
+
+    // Cooling by the sorroundings
+    if (isConstHeat)
+        return;
+    const float COOLING_RATE = 0.2f;
+    float change = heatTransferCoeff * m_Temperature * COOLING_RATE * dt;
+    SetTemperature(m_Temperature - change);
+}
+
+void Particle::SetTemperature(const float temperature)
+{
+    m_Temperature = temperature;
+    m_Shape.setFillColor(GetTemperatureColor(m_Temperature));
 }
 
 void Particle::SetPosition(const glm::vec2& nPos)
