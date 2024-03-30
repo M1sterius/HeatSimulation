@@ -1,6 +1,21 @@
 #include "Particle.hpp"
 #include "PhysicsUtility.hpp"
 
+#include <algorithm>
+
+sf::Color Particle::GetTemperatureColor()
+{
+    const sf::Color MAX_COLOR = sf::Color(255, 85, 0);
+
+    float t = std::min(1.0f, std::max(0.0f, m_Temperature / 100.0f));
+
+    int r = static_cast<int>(MAX_COLOR.r * t);
+    int g = static_cast<int>(MAX_COLOR.g * t);
+    int b = static_cast<int>(MAX_COLOR.b * t);
+
+    return sf::Color(r, g, b);
+}
+
 Particle::Particle(const float& radius)
 {   
     m_CurrentPosition = glm::vec2(0, 0);
@@ -10,7 +25,7 @@ Particle::Particle(const float& radius)
     
     m_Shape = sf::CircleShape(radius);
     m_Shape.setPosition(sf::Vector2f(m_CurrentPosition.x - m_Radius, m_CurrentPosition.y - m_Radius));
-    m_Shape.setFillColor(GetTemperatureColor(m_Temperature));
+    m_Shape.setFillColor(GetTemperatureColor());
 }
 
 Particle::~Particle()
@@ -46,15 +61,19 @@ void Particle::ApplyHeat(const float dt)
     if (isConstHeat)
         return;
 
-    const float COOLING_RATE = 0.95f;
+    /*const float COOLING_RATE = 0.3f;
     float change = heatTransferCoeff * m_Temperature * COOLING_RATE * dt;
-    SetTemperature(m_Temperature - change);
+    SetTemperature(m_Temperature - change);*/
+
+    float diff = 10 - m_Temperature;
+    float q = heatTransferCoeff * 1.0f * diff;
+    SetTemperature(m_Temperature + q * dt);
 }
 
 void Particle::SetTemperature(const float temperature)
 {
     m_Temperature = temperature;
-    m_Shape.setFillColor(GetTemperatureColor(m_Temperature));
+    m_Shape.setFillColor(GetTemperatureColor());
 }
 
 void Particle::SetPosition(const glm::vec2& nPos)

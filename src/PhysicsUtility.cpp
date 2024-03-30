@@ -4,6 +4,10 @@
 #include <memory>
 #include <math.h>
 
+// Global physics constants --------------------
+const glm::vec2 g = glm::vec2(0, 981);
+// ---------------------------------------------
+
 bool SolveCollision(Particle* p1, Particle* p2)
 {   
     const float COLLISION_COEFF = 0.8f;
@@ -35,34 +39,39 @@ bool SolveCollision(Particle* p1, Particle* p2)
     return false;
 }
 
-void ConductHeat(Particle* p1, Particle* p2)
+void ConductHeat(Particle* p1, Particle* p2, const float dt)
 {
     float t1 = p1->GetTemperature();
     float t2 = p2->GetTemperature();
 
-    float av = (t1 + t2) / 2;
+    //float av = (t1 + t2) / 2;
 
-    if (!p1->isConstHeat)
-        p1->SetTemperature(std::lerp(t1, av, p1->heatTransferCoeff));
-    if (!p2->isConstHeat)
-        p2->SetTemperature(std::lerp(t2, av, p2->heatTransferCoeff));
+    //if (!p1->isConstHeat)
+    //    p1->SetTemperature(std::lerp(t1, av, p1->heatTransferCoeff));
+    //if (!p2->isConstHeat)
+    //    p2->SetTemperature(std::lerp(t2, av, p2->heatTransferCoeff));
 
-    // float k = (p1->heatTransferCoeff + p2->heatTransferCoeff) / 2;
 
     // float q = (k * 1.0f * (t2 - t1)) / glm::distance(p1->GetPosition(), p2->GetPosition());
 
     // p1->SetTemperature(t1 + (q / dt))
+    float k = (p1->heatTransferCoeff + p2->heatTransferCoeff) / 2;
+
+    float diff = t2 - t1;
+    float q = k * diff;
+
+    if (!p1->isConstHeat)
+        p1->SetTemperature(t1 + (q * dt));
+    if (!p2->isConstHeat)
+        p2->SetTemperature(t2 - (q * dt));
 }
 
-sf::Color GetTemperatureColor(float temp)
-{   
-    const sf::Color MAX_COLOR = sf::Color(255, 85, 0);
+void ApplyConvection(Particle* p, const float dt)
+{
 
-    float t = std::max(0.0f, temp / 100.0f);
+}
 
-    int r = static_cast<int>(MAX_COLOR.r * t);
-    int g = static_cast<int>(MAX_COLOR.g * t);
-    int b = static_cast<int>(MAX_COLOR.b * t);
+void ApplyCooling(Particle* p, const float dt)
+{
 
-    return sf::Color(r, g, b);
 }

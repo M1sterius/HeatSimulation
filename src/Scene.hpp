@@ -17,6 +17,9 @@ private:
     std::vector<Particle*> m_Particles;
 
     Grid m_Grid;
+
+    sf::Font m_DebugFont;
+    sf::Text m_DebugText;
 public:
     Scene(size_t winSizeX, size_t winXizeY);
     ~Scene();

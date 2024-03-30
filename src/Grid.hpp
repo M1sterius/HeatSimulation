@@ -32,5 +32,5 @@ public:
     Grid(size_t sizeX, size_t sizeY, size_t cellSize);
     ~Grid();
 
-    void Update(std::vector<Particle*>& sceneParticles);
+    void Update(std::vector<Particle*>& sceneParticles, const float dt);
 };

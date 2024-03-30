@@ -39,10 +39,8 @@ Grid::~Grid()
     
 }
 
-void Grid::Update(std::vector<Particle*>& sceneParticles)
+void Grid::Update(std::vector<Particle*>& sceneParticles, const float dt)
 {   
-    static sf::Clock clock;
-
     #pragma region PopulateGrid
 
     // Removing all particles from grid cells
@@ -70,6 +68,7 @@ void Grid::Update(std::vector<Particle*>& sceneParticles)
 
         m_Cells[indexX][indexY].particlesIndices.push_back(i);
 
+        // Use the remainder to determine if some particles overlap multiple cells
         size_t remX = static_cast<size_t>(pos.x) % m_CellSize;
         size_t remY = static_cast<size_t>(pos.y) % m_CellSize;
         
@@ -101,15 +100,18 @@ void Grid::Update(std::vector<Particle*>& sceneParticles)
     
     #pragma region CheckCollisions
 
+    // Iterate over all cells in the grid
     for (size_t x = 0; x < m_NumCellsX; x++)
     {
         for (size_t y = 0; y < m_NumCellsY; y++)
         {
             GridCell& cell = m_Cells[x][y];
 
+            // Skip the cell if it contains 1 or no particles
             if (cell.particlesIndices.size() < 2)
                 continue;
 
+            // Check collisions between all pairs of particles in the cell
             for (size_t i = 0; i < cell.particlesIndices.size() - 1; i++)
             {
                 for (size_t j = i + 1; j < cell.particlesIndices.size(); j++)
@@ -118,60 +120,10 @@ void Grid::Update(std::vector<Particle*>& sceneParticles)
                     Particle* p2 = sceneParticles[cell.particlesIndices[j]];
 
                     if (SolveCollision(p1, p2))
-                        ConductHeat(p1, p2);
+                        ConductHeat(p1, p2, dt);
                 }
             }
         }
     }
-
- /*   for (size_t x = 1; x < m_NumCellsX - 1; x++)
-    {
-        for (size_t y = 1; y < m_NumCellsY - 1; y++)
-        {       
-            GridCell& currentCell = m_Cells[x][y];
-
-            for (int dx = -1; dx <= 1; ++dx)
-            {
-                for (int dy = -1; dy <= 1; ++dy)
-                {
-                    size_t nx = x + dx;
-                    size_t ny = y + dy;
-
-                    if (dx == 0 && dy == 0)
-                        continue;
-
-                    GridCell& otherCell = m_Cells[nx][ny];
-                    
-                    for (const auto& idx1 : currentCell.particlesIndices)
-                    {   
-                        Particle* p1 = sceneParticles[idx1];
-
-                        for (const auto& idx2 : otherCell.particlesIndices)
-                        {
-                            Particle* p2 = sceneParticles[idx2];
-
-                            if (SolveCollision(p1, p2))
-                                ConductHeat(p1, p2);
-                        }
-                    }
-
-                    if (otherCell.particlesIndices.size() > 2)
-                    {
-                        for (size_t i = 0; i < otherCell.particlesIndices.size() - 1; i++)
-                        {
-                            for (size_t j = i + 1; j < otherCell.particlesIndices.size(); j++)
-                            {
-                                Particle* p1 = sceneParticles[otherCell.particlesIndices[i]];
-                                Particle* p2 = sceneParticles[otherCell.particlesIndices[j]];
-
-                                if (SolveCollision(p1, p2))
-                                    ConductHeat(p1, p2);
-                            }
-                        }
-                    }
-                }
-            }
-        }*/
-    //}
     #pragma endregion
 }

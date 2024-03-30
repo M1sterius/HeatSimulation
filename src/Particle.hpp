@@ -15,10 +15,11 @@ private:
 
     float m_Temperature = 30.0f;
     
+    sf::Color GetTemperatureColor();
 public:
     bool isStatic = false;
     bool isConstHeat = false;
-    float heatTransferCoeff = 0.6f;
+    float heatTransferCoeff = 25.0f;
 
     Particle(const float& radius);
     ~Particle();

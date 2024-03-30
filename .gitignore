@@ -1,6 +1,7 @@
 bin/
 .vscode/
 build/
+out/
 .vs/
 *.lib
 *.exe

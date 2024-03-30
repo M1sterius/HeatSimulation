@@ -8,7 +8,10 @@
 Scene::Scene(size_t winSizeX, size_t winSizeY)
     : m_WinSizeX(winSizeX), m_WinSizeY(winSizeY), m_Grid(winSizeX, winSizeY, 80)
 {
-    
+    m_DebugFont.loadFromFile("C:/Windows/Fonts/Arial.ttf");
+    m_DebugText.setFont(m_DebugFont);
+    m_DebugText.setCharacterSize(14);
+    m_DebugText.setFillColor(sf::Color::White);
 }
 
 Scene::~Scene()
@@ -30,7 +33,7 @@ void Scene::Update()
     {   
         Particle* particle = m_Particles[i];
         particle->ApplyHeat(m_DeltaTime);
-        particle->Accelerate(glm::vec2(0, 500));
+        particle->Accelerate(g);
         particle->Integrate(m_DeltaTime);
     }
     // ---------------------------------------------
@@ -68,21 +71,9 @@ void Scene::Update()
     }
     // ---------------------------------------------
 
-    //// Collisions ----------------------------------
-    //for (size_t i = 0; i < m_Particles.size() - 1; i++)
-    //{
-    //    for (size_t j = i + 1; j < m_Particles.size(); j++)
-    //    {
-    //        std::shared_ptr<Particle> p1 = m_Particles[i];
-    //        std::shared_ptr<Particle> p2 = m_Particles[j];
-
-    //        if (SolveCollision(p1, p2))
-    //            ConductHeat(p1, p2);
-    //    }
-    //}
-    //// ---------------------------------------------
-
-    m_Grid.Update(m_Particles);
+    // Updating the grid ---------------------------
+    m_Grid.Update(m_Particles, m_DeltaTime);
+    // ---------------------------------------------
     
     //std::cout << 1 / m_DeltaTime << ", " << m_Particles.size() << '\n';
     m_DeltaTime = deltaTimeClock.restart().asSeconds();
@@ -96,5 +87,13 @@ void Scene::Render(sf::RenderWindow& window)
         window.draw(particle->GetShape());
     }
 
-    window.setTitle(std::to_string(1.0f / m_DeltaTime));
+    // Display debug info --------------------------
+    m_DebugText.setString("FPS: " + std::to_string(1 / m_DeltaTime));
+    m_DebugText.setPosition(10, 10);
+    window.draw(m_DebugText);
+
+    m_DebugText.setString("Prtcls: " + std::to_string(m_Particles.size()));
+    m_DebugText.setPosition(10, 30);
+    window.draw(m_DebugText);
+    // ---------------------------------------------
 }
