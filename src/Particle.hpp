@@ -13,12 +13,12 @@ private:
     float m_Radius;
     sf::CircleShape m_Shape;
 
-    float m_Temperature = 100.0f;
+    float m_Temperature = 30.0f;
     
 public:
     bool isStatic = false;
     bool isConstHeat = false;
-    float heatTransferCoeff = 0.3f;
+    float heatTransferCoeff = 0.6f;
 
     Particle(const float& radius);
     ~Particle();

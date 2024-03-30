@@ -4,31 +4,18 @@
 #include <memory>
 #include <math.h>
 
-Manifold::Manifold()
-{
-    
-}
+bool SolveCollision(Particle* p1, Particle* p2)
+{   
+    const float COLLISION_COEFF = 0.8f;
 
-Manifold::Manifold(std::shared_ptr<Particle> p1, std::shared_ptr<Particle> p2, const glm::vec2& normal, const float penetrationDepth)
-    : p1(p1), p2(p2), normal(normal), penetrationDepth(penetrationDepth)
-{
-    
-}
-
-Manifold::~Manifold()
-{
-    
-}
-
-bool SolveCollision(std::shared_ptr<Particle> p1, std::shared_ptr<Particle> p2)
-{
     float d = glm::distance(p1->GetPosition(), p2->GetPosition());
     float rs = p1->GetRadius() + p2->GetRadius();
-    glm::vec2 n = glm::normalize(p2->GetPosition() - p1->GetPosition());
-    float delta = rs - d;
+    glm::vec2 n = (p2->GetPosition() - p1->GetPosition()) / d;
 
-    if (d < rs)
+    if (d < rs && d > 0.01f)
     {
+        float delta = (rs - d) * COLLISION_COEFF;
+
         if (p1->isStatic)
         {
             p2->AddCurrentPosition(delta * n);
@@ -48,7 +35,7 @@ bool SolveCollision(std::shared_ptr<Particle> p1, std::shared_ptr<Particle> p2)
     return false;
 }
 
-void ConductHeat(std::shared_ptr<Particle> p1, std::shared_ptr<Particle> p2)
+void ConductHeat(Particle* p1, Particle* p2)
 {
     float t1 = p1->GetTemperature();
     float t2 = p2->GetTemperature();
@@ -59,6 +46,12 @@ void ConductHeat(std::shared_ptr<Particle> p1, std::shared_ptr<Particle> p2)
         p1->SetTemperature(std::lerp(t1, av, p1->heatTransferCoeff));
     if (!p2->isConstHeat)
         p2->SetTemperature(std::lerp(t2, av, p2->heatTransferCoeff));
+
+    // float k = (p1->heatTransferCoeff + p2->heatTransferCoeff) / 2;
+
+    // float q = (k * 1.0f * (t2 - t1)) / glm::distance(p1->GetPosition(), p2->GetPosition());
+
+    // p1->SetTemperature(t1 + (q / dt))
 }
 
 sf::Color GetTemperatureColor(float temp)

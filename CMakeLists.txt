@@ -24,11 +24,11 @@ target_link_directories(HeatSimulation PRIVATE
 )
 
 target_link_libraries(HeatSimulation
-    sfml-window-s-d
-    sfml-system-s-d
+    sfml-window-s
+    sfml-system-s
     opengl32
     freetype
-    sfml-graphics-s-d
+    sfml-graphics-s
     winmm
     gdi32
 )

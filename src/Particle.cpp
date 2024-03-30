@@ -40,12 +40,13 @@ void Particle::ApplyHeat(const float dt)
 {   
     // Convection force
     float t = std::max(0.0f, m_Temperature / 100.0f);
-    Accelerate(glm::vec2(0, -1300.0f) * t);
+    Accelerate(glm::vec2(0, -4300.0f) * t);
 
     // Cooling by the sorroundings
     if (isConstHeat)
         return;
-    const float COOLING_RATE = 0.2f;
+
+    const float COOLING_RATE = 0.95f;
     float change = heatTransferCoeff * m_Temperature * COOLING_RATE * dt;
     SetTemperature(m_Temperature - change);
 }
@@ -61,6 +62,7 @@ void Particle::SetPosition(const glm::vec2& nPos)
     glm::vec2 diff = m_CurrentPosition - m_OldPosition;
     m_OldPosition = nPos;
     m_CurrentPosition = nPos + diff;
+    // Adjust the position of sfml shape so m_CurrentPosition is in it's center
     m_Shape.setPosition(sf::Vector2f(m_CurrentPosition.x - m_Radius, m_CurrentPosition.y - m_Radius));
 }
 

@@ -5,7 +5,8 @@
 #include <iostream>
 #include <math.h>
 
-Scene::Scene()
+Scene::Scene(size_t winSizeX, size_t winSizeY)
+    : m_WinSizeX(winSizeX), m_WinSizeY(winSizeY), m_Grid(winSizeX, winSizeY, 80)
 {
     
 }
@@ -15,7 +16,7 @@ Scene::~Scene()
     
 }
 
-void Scene::AddParticle(const std::shared_ptr<Particle> ptr)
+void Scene::AddParticle(Particle* ptr)
 {
     m_Particles.push_back(ptr);
 }
@@ -27,7 +28,7 @@ void Scene::Update()
     // Integration ---------------------------------
     for (size_t i = 0; i < m_Particles.size(); i++)
     {   
-        std::shared_ptr<Particle> particle = m_Particles[i];
+        Particle* particle = m_Particles[i];
         particle->ApplyHeat(m_DeltaTime);
         particle->Accelerate(glm::vec2(0, 500));
         particle->Integrate(m_DeltaTime);
@@ -37,9 +38,9 @@ void Scene::Update()
     // Bounds --------------------------------------
     for (size_t i = 0; i < m_Particles.size(); i++)
     {
-        std::shared_ptr<Particle> particle = m_Particles[i];
-        const glm::vec2 vertBounds = glm::vec2(0, 1280);
-        const glm::vec2 horizBounds = glm::vec2(0, 720);
+        Particle* particle = m_Particles[i];
+        const glm::vec2 vertBounds = glm::vec2(0, m_WinSizeX);
+        const glm::vec2 horizBounds = glm::vec2(0, m_WinSizeY);
 
         glm::vec2 pos = particle->GetPosition();
         float r = particle->GetRadius();
@@ -67,23 +68,23 @@ void Scene::Update()
     }
     // ---------------------------------------------
 
-    // Collisions ----------------------------------
-    for (size_t i = 0; i < m_Particles.size() - 1; i++)
-    {
-        for (size_t j = i + 1; j < m_Particles.size(); j++)
-        {
-            std::shared_ptr<Particle> p1 = m_Particles[i];
-            std::shared_ptr<Particle> p2 = m_Particles[j];
+    //// Collisions ----------------------------------
+    //for (size_t i = 0; i < m_Particles.size() - 1; i++)
+    //{
+    //    for (size_t j = i + 1; j < m_Particles.size(); j++)
+    //    {
+    //        std::shared_ptr<Particle> p1 = m_Particles[i];
+    //        std::shared_ptr<Particle> p2 = m_Particles[j];
 
-            Manifold mf;
+    //        if (SolveCollision(p1, p2))
+    //            ConductHeat(p1, p2);
+    //    }
+    //}
+    //// ---------------------------------------------
 
-            if (SolveCollision(p1, p2))
-                ConductHeat(p1, p2);
-        }
-    }
-    // ---------------------------------------------
+    m_Grid.Update(m_Particles);
     
-    //std::cout << 1 / m_DeltaTime << '\n';
+    //std::cout << 1 / m_DeltaTime << ", " << m_Particles.size() << '\n';
     m_DeltaTime = deltaTimeClock.restart().asSeconds();
 }
 
@@ -91,7 +92,9 @@ void Scene::Render(sf::RenderWindow& window)
 {
     for (size_t i = 0; i < m_Particles.size(); i++)
     {
-        std::shared_ptr<Particle> particle = m_Particles[i];
+        Particle* particle = m_Particles[i];
         window.draw(particle->GetShape());
     }
+
+    window.setTitle(std::to_string(1.0f / m_DeltaTime));
 }
