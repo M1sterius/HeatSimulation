@@ -24,11 +24,11 @@ target_link_directories(HeatSimulation PRIVATE
 )
 
 target_link_libraries(HeatSimulation
-    sfml-window-s-d
-    sfml-system-s-d
+    sfml-window-s # add "-d" postfix for debug build
+    sfml-system-s # add "-d" postfix for debug build
     opengl32
     freetype
-    sfml-graphics-s-d
+    sfml-graphics-s # add "-d" postfix for debug build
     winmm
     gdi32
 )

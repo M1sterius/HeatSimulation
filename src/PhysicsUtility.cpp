@@ -6,13 +6,13 @@
 
 bool SolveCollision(Particle* p1, Particle* p2)
 {   
-    const float COLLISION_COEFF = 0.8f;
+    const float COLLISION_COEFF = 0.6f;
 
-    float d = glm::distance(p1->GetPosition(), p2->GetPosition());
     float rs = p1->GetRadius() + p2->GetRadius();
+    float d = glm::distance(p1->GetPosition(), p2->GetPosition());
     glm::vec2 n = (p2->GetPosition() - p1->GetPosition()) / d;
 
-    if (d < rs && d > 0.01f)
+    if (d < rs && d > 1.0f)
     {
         float delta = (rs - d) * COLLISION_COEFF;
 
@@ -31,7 +31,6 @@ bool SolveCollision(Particle* p1, Particle* p2)
         p2->AddCurrentPosition(0.5f * delta * n);
         return true;
     }
-
     return false;
 }
 
@@ -55,7 +54,7 @@ void ApplyConvection(Particle* p, const float dt)
 {   
     float t = p->GetTemperature();
 
-    glm::vec2 f = g * t * thermal_expansion_coefficient;
+    glm::vec2 f = g * t * THERMAL_EXPANSION_COEFFICIENT;
 
     p->Accelerate(-f);
 }
@@ -67,7 +66,7 @@ void ApplyCooling(Particle* p, const float dt)
 
     float t = p->GetTemperature();
 
-    float diff = t - t_surroundings;
-    float q = p->heatTransferCoeff * 1.0f * diff * heat_loss_coefficient;
+    float diff = t - T_SURROUNDINGS;
+    float q = p->heatTransferCoeff * 1.0f * diff * HEAT_LOSS_COEFFICIENT;
     p->SetTemperature(t - (q * dt));
 }

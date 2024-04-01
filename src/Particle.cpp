@@ -7,7 +7,7 @@ sf::Color Particle::GetTemperatureColor()
 {
     const sf::Color MAX_COLOR = sf::Color(255, 85, 0);
 
-    float t = std::min(1.0f, std::max(0.0f, m_Temperature / 100.0f));
+    float t = std::min(1.0f, std::max(0.0f, (m_Temperature / 100.0f)));
 
     int r = static_cast<int>(MAX_COLOR.r * t);
     int g = static_cast<int>(MAX_COLOR.g * t);

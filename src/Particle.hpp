@@ -19,7 +19,7 @@ private:
 public:
     bool isStatic = false;
     bool isConstHeat = false;
-    float heatTransferCoeff = 35.0f;
+    float heatTransferCoeff = 9.0f;
 
     Particle(const float& radius);
     ~Particle();

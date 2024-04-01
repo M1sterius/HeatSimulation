@@ -6,7 +6,7 @@
 #include <math.h>
 
 Scene::Scene(size_t winSizeX, size_t winSizeY)
-    : m_WinSizeX(winSizeX), m_WinSizeY(winSizeY), m_Grid(winSizeX, winSizeY, 80)
+    : m_WinSizeX(winSizeX), m_WinSizeY(winSizeY), m_Grid(winSizeX, winSizeY, 70)
 {
     m_DebugFont.loadFromFile("C:/Windows/Fonts/Arial.ttf");
     m_DebugText.setFont(m_DebugFont);
@@ -28,56 +28,63 @@ void Scene::Update()
 {
     static sf::Clock deltaTimeClock;
 
-    // Integration ---------------------------------
-    for (size_t i = 0; i < m_Particles.size(); i++)
+    const size_t substeps = 4;
+
+    for (size_t i = 0; i < substeps; i++)
     {   
-        Particle* particle = m_Particles[i];
-        particle->Accelerate(g);
-        particle->Integrate(m_DeltaTime);
+        float dt = m_DeltaTime / 4;
 
-        ApplyConvection(particle, m_DeltaTime);
-        ApplyCooling(particle, m_DeltaTime);
+        // Update Particles -----------------------------
+        for (size_t i = 0; i < m_Particles.size(); i++)
+        {   
+            Particle* particle = m_Particles[i];
+            particle->Accelerate(g);
+            particle->Integrate(dt);
+
+            ApplyConvection(particle, dt);
+            ApplyCooling(particle, dt);
+        }
+        // ---------------------------------------------
+
+        // Check bounds --------------------------------
+        for (size_t i = 0; i < m_Particles.size(); i++)
+        {
+            Particle* particle = m_Particles[i];
+            const glm::vec2 vertBounds = glm::vec2(0, m_WinSizeX);
+            const glm::vec2 horizBounds = glm::vec2(0, m_WinSizeY);
+
+            glm::vec2 pos = particle->GetPosition();
+            float r = particle->GetRadius();
+
+            if (pos.x < (vertBounds.x + r))
+            {
+                glm::vec2 sep = glm::vec2((vertBounds.x + r) - pos.x, 0.0f);
+                particle->AddCurrentPosition(sep);
+            }
+            if (pos.x > (vertBounds.y - r))
+            {
+                glm::vec2 sep = glm::vec2(pos.x - (vertBounds.y - r), 0);
+                particle->AddCurrentPosition(-sep);
+            }
+            if (pos.y < (horizBounds.x + r))
+            {
+                glm::vec2 sep = glm::vec2(0, (horizBounds.x + r) - pos.y);
+                particle->AddCurrentPosition(sep);           
+            }
+            if (pos.y > (horizBounds.y - r))
+            {
+                glm::vec2 sep = glm::vec2(0, pos.y - (horizBounds.y - r));
+                particle->AddCurrentPosition(-sep);
+                particle->SetTemperature(200.0f);
+            }
+        }
+        // ---------------------------------------------
+
+        // Update the grid -----------------------------
+        m_Grid.Update(m_Particles, dt);
+        // ---------------------------------------------
     }
-    // ---------------------------------------------
-
-    // Bounds --------------------------------------
-    for (size_t i = 0; i < m_Particles.size(); i++)
-    {
-        Particle* particle = m_Particles[i];
-        const glm::vec2 vertBounds = glm::vec2(0, m_WinSizeX);
-        const glm::vec2 horizBounds = glm::vec2(0, m_WinSizeY);
-
-        glm::vec2 pos = particle->GetPosition();
-        float r = particle->GetRadius();
-
-        if (pos.x < (vertBounds.x + r))
-        {
-            glm::vec2 sep = glm::vec2((vertBounds.x + r) - pos.x, 0.0f);
-            particle->AddCurrentPosition(sep);
-        }
-        if (pos.x > (vertBounds.y - r))
-        {
-            glm::vec2 sep = glm::vec2(pos.x - (vertBounds.y - r), 0);
-            particle->AddCurrentPosition(-sep);
-        }
-        if (pos.y < (horizBounds.x + r))
-        {
-            glm::vec2 sep = glm::vec2(0, (horizBounds.x + r) - pos.y);
-            particle->AddCurrentPosition(sep);
-        }
-        if (pos.y > (horizBounds.y - r))
-        {
-            glm::vec2 sep = glm::vec2(0, pos.y - (horizBounds.y - r));
-            particle->AddCurrentPosition(-sep);
-        }
-    }
-    // ---------------------------------------------
-
-    // Updating the grid ---------------------------
-    m_Grid.Update(m_Particles, m_DeltaTime);
-    // ---------------------------------------------
     
-    //std::cout << 1 / m_DeltaTime << ", " << m_Particles.size() << '\n';
     m_DeltaTime = deltaTimeClock.restart().asSeconds();
 }
 
