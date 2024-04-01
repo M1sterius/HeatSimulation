@@ -32,9 +32,11 @@ void Scene::Update()
     for (size_t i = 0; i < m_Particles.size(); i++)
     {   
         Particle* particle = m_Particles[i];
-        particle->ApplyHeat(m_DeltaTime);
         particle->Accelerate(g);
         particle->Integrate(m_DeltaTime);
+
+        ApplyConvection(particle, m_DeltaTime);
+        ApplyCooling(particle, m_DeltaTime);
     }
     // ---------------------------------------------
 

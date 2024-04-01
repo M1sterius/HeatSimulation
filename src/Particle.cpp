@@ -51,25 +51,6 @@ void Particle::Accelerate(const glm::vec2& accel)
     m_Acceleration += accel;
 }
 
-void Particle::ApplyHeat(const float dt)
-{   
-    // Convection force
-    float t = std::max(0.0f, m_Temperature / 100.0f);
-    Accelerate(glm::vec2(0, -4300.0f) * t);
-
-    // Cooling by the sorroundings
-    if (isConstHeat)
-        return;
-
-    /*const float COOLING_RATE = 0.3f;
-    float change = heatTransferCoeff * m_Temperature * COOLING_RATE * dt;
-    SetTemperature(m_Temperature - change);*/
-
-    float diff = 10 - m_Temperature;
-    float q = heatTransferCoeff * 1.0f * diff;
-    SetTemperature(m_Temperature + q * dt);
-}
-
 void Particle::SetTemperature(const float temperature)
 {
     m_Temperature = temperature;

@@ -4,10 +4,6 @@
 #include <memory>
 #include <math.h>
 
-// Global physics constants --------------------
-const glm::vec2 g = glm::vec2(0, 981);
-// ---------------------------------------------
-
 bool SolveCollision(Particle* p1, Particle* p2)
 {   
     const float COLLISION_COEFF = 0.8f;
@@ -44,18 +40,7 @@ void ConductHeat(Particle* p1, Particle* p2, const float dt)
     float t1 = p1->GetTemperature();
     float t2 = p2->GetTemperature();
 
-    //float av = (t1 + t2) / 2;
-
-    //if (!p1->isConstHeat)
-    //    p1->SetTemperature(std::lerp(t1, av, p1->heatTransferCoeff));
-    //if (!p2->isConstHeat)
-    //    p2->SetTemperature(std::lerp(t2, av, p2->heatTransferCoeff));
-
-
-    // float q = (k * 1.0f * (t2 - t1)) / glm::distance(p1->GetPosition(), p2->GetPosition());
-
-    // p1->SetTemperature(t1 + (q / dt))
-    float k = (p1->heatTransferCoeff + p2->heatTransferCoeff) / 2;
+    float k = 2 / ((1 / p1->heatTransferCoeff) + (1 / p2->heatTransferCoeff));
 
     float diff = t2 - t1;
     float q = k * diff;
@@ -67,11 +52,22 @@ void ConductHeat(Particle* p1, Particle* p2, const float dt)
 }
 
 void ApplyConvection(Particle* p, const float dt)
-{
+{   
+    float t = p->GetTemperature();
 
+    glm::vec2 f = g * t * thermal_expansion_coefficient;
+
+    p->Accelerate(-f);
 }
 
 void ApplyCooling(Particle* p, const float dt)
 {
+    if (p->isConstHeat)
+        return;
 
+    float t = p->GetTemperature();
+
+    float diff = t - t_surroundings;
+    float q = p->heatTransferCoeff * 1.0f * diff * heat_loss_coefficient;
+    p->SetTemperature(t - (q * dt));
 }

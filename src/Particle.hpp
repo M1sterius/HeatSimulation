@@ -13,20 +13,19 @@ private:
     float m_Radius;
     sf::CircleShape m_Shape;
 
-    float m_Temperature = 30.0f;
+    float m_Temperature = 0.0f;
     
     sf::Color GetTemperatureColor();
 public:
     bool isStatic = false;
     bool isConstHeat = false;
-    float heatTransferCoeff = 25.0f;
+    float heatTransferCoeff = 35.0f;
 
     Particle(const float& radius);
     ~Particle();
 
     void Integrate(const float dt);
     void Accelerate(const glm::vec2& accel);
-    void ApplyHeat(const float dt);
 
     void SetTemperature(const float temperature);
     void SetPosition(const glm::vec2& nPos);

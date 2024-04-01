@@ -15,14 +15,25 @@ int main()
 
     Scene scene = Scene(1280, 720);
 
-    for (size_t i = 0; i < 63; i++)
+    for (size_t i = 0; i < 65; i++)
     {
         Particle* particle = new Particle(10);
-        particle->SetPosition(glm::vec2(20, 710) + glm::vec2(i, 0) * 20.0f);
-        particle->SetTemperature(300.0f);
+        particle->SetPosition(glm::vec2(0, 710) + glm::vec2(i, 0) * 20.0f);
+        particle->SetTemperature(100.0f);
         particle->isStatic = true;
         particle->isConstHeat = true;
         scene.AddParticle(particle);
+    }
+
+    for (size_t x = 0; x < 200; x++)
+    {
+        for (size_t y = 0; y < 25; y++)
+        {
+            Particle* particle = new Particle(3);
+            particle->SetTemperature(10.0f);
+            particle->SetPosition(glm::vec2(140, 350) + glm::vec2(x, y) * 5.0f);
+            scene.AddParticle(particle);
+        }
     }
 
     while (window.isOpen())
@@ -39,12 +50,16 @@ int main()
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
         {
             sf::Vector2i mousePosition = sf::Mouse::getPosition(window);
-            Particle* particle = new Particle(5);
+            Particle* particle = new Particle(3);
             particle->SetPosition(glm::vec2(mousePosition.x, mousePosition.y));
             scene.AddParticle(particle);
         }
 
-        scene.Update();
+        for (size_t i = 0; i < 4; i++)
+        {
+            scene.Update();
+        }
+        
         scene.Render(window);
 
         window.display();
