@@ -28,9 +28,13 @@ private:
     size_t m_NumCellsY;
 
     std::vector<std::vector<GridCell>> m_Cells;
+    std::vector<Particle*>& m_SceneParticles;
+
+    void PopulateGrid();
+    void CheckCollisions(const float dt);
 public:
-    Grid(size_t sizeX, size_t sizeY, size_t cellSize);
+    Grid(size_t sizeX, size_t sizeY, size_t cellSize, std::vector<Particle*>& sceneParticles);
     ~Grid();
 
-    void Update(std::vector<Particle*>& sceneParticles, const float dt);
+    void Update(const float dt);
 };

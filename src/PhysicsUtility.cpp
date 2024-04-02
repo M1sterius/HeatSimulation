@@ -4,17 +4,17 @@
 #include <memory>
 #include <math.h>
 
-bool SolveCollision(Particle* p1, Particle* p2)
+bool Collide(Particle* p1, Particle* p2)
 {   
-    const float COLLISION_COEFF = 0.6f;
+    const static float COLLISION_COEFF = 0.6f; // How much energy particles will keep after the collision
 
-    float rs = p1->GetRadius() + p2->GetRadius();
-    float d = glm::distance(p1->GetPosition(), p2->GetPosition());
-    glm::vec2 n = (p2->GetPosition() - p1->GetPosition()) / d;
+    const float rs = p1->GetRadius() + p2->GetRadius();
+    const float d = glm::distance(p1->GetPosition(), p2->GetPosition());
+    const glm::vec2 n = (p2->GetPosition() - p1->GetPosition()) / d;
 
     if (d < rs && d > 1.0f)
     {
-        float delta = (rs - d) * COLLISION_COEFF;
+        const float delta = (rs - d) * COLLISION_COEFF;
 
         if (p1->isStatic)
         {
@@ -36,13 +36,13 @@ bool SolveCollision(Particle* p1, Particle* p2)
 
 void ConductHeat(Particle* p1, Particle* p2, const float dt)
 {
-    float t1 = p1->GetTemperature();
-    float t2 = p2->GetTemperature();
+    const float t1 = p1->GetTemperature();
+    const float t2 = p2->GetTemperature();
 
-    float k = 2 / ((1 / p1->heatTransferCoeff) + (1 / p2->heatTransferCoeff));
+    const float k = 2 / ((1 / p1->heatTransferCoeff) + (1 / p2->heatTransferCoeff));
 
-    float diff = t2 - t1;
-    float q = k * diff;
+    const float diff = t2 - t1;
+    const float q = k * diff;
 
     if (!p1->isConstHeat)
         p1->SetTemperature(t1 + (q * dt));
@@ -52,9 +52,9 @@ void ConductHeat(Particle* p1, Particle* p2, const float dt)
 
 void ApplyConvection(Particle* p, const float dt)
 {   
-    float t = p->GetTemperature();
+    const float t = p->GetTemperature();
 
-    glm::vec2 f = g * t * THERMAL_EXPANSION_COEFFICIENT;
+    const glm::vec2 f = g * t * THERMAL_EXPANSION_COEFFICIENT;
 
     p->Accelerate(-f);
 }
@@ -64,9 +64,9 @@ void ApplyCooling(Particle* p, const float dt)
     if (p->isConstHeat)
         return;
 
-    float t = p->GetTemperature();
+    const float t = p->GetTemperature();
 
-    float diff = t - T_SURROUNDINGS;
-    float q = p->heatTransferCoeff * 1.0f * diff * HEAT_LOSS_COEFFICIENT;
+    const float diff = t - T_SURROUNDINGS;
+    const float q = p->heatTransferCoeff * 1.0f * diff * HEAT_LOSS_COEFFICIENT;
     p->SetTemperature(t - (q * dt));
 }

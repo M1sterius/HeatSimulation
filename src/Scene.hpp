@@ -10,16 +10,21 @@
 class Scene
 {
 private:
+    const size_t SUBSTEPS = 4;
+
     float m_DeltaTime = 0;
-    size_t m_WinSizeX;
-    size_t m_WinSizeY;
 
     std::vector<Particle*> m_Particles;
 
+    size_t m_WinSizeX;
+    size_t m_WinSizeY;
     Grid m_Grid;
 
     sf::Font m_DebugFont;
     sf::Text m_DebugText;
+
+    void UpdateParticles(const float dt);
+    void CheckBounds();
 public:
     Scene(size_t winSizeX, size_t winXizeY);
     ~Scene();

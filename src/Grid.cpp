@@ -16,8 +16,8 @@ GridCell::~GridCell()
     
 }
 
-Grid::Grid(size_t sizeX, size_t sizeY, size_t cellSize)
-    : m_SizeX(sizeX), m_SizeY(sizeY), m_CellSize(cellSize)
+Grid::Grid(size_t sizeX, size_t sizeY, size_t cellSize, std::vector<Particle*>& sceneParticles)
+    : m_SizeX(sizeX), m_SizeY(sizeY), m_CellSize(cellSize), m_SceneParticles(sceneParticles)
 {
     m_NumCellsX = static_cast<size_t>(sizeX / cellSize);
     m_NumCellsY = static_cast<size_t>(sizeY / cellSize);
@@ -39,11 +39,9 @@ Grid::~Grid()
     
 }
 
-void Grid::Update(std::vector<Particle*>& sceneParticles, const float dt)
-{   
-    #pragma region PopulateGrid
-
-    // Removing all particles from grid cells
+void Grid::PopulateGrid()
+{
+    // Remove all particles from grid cells
     for (size_t x = 0; x < m_NumCellsX; x++)
     {
         for (size_t y = 0; y < m_NumCellsY; y++)
@@ -52,12 +50,12 @@ void Grid::Update(std::vector<Particle*>& sceneParticles, const float dt)
         }
     }
 
-    // Populating the cells of the grid with particles according to their positions
-    for (size_t i = 0; i < sceneParticles.size(); i++)
+    // Populate the cells with particles according to their positions
+    for (size_t i = 0; i < m_SceneParticles.size(); i++)
     {
-        Particle* particle = sceneParticles[i];
-        glm::vec2 pos = particle->GetPosition();
-        float r = particle->GetRadius();
+        Particle* particle = m_SceneParticles[i];
+        const glm::vec2 pos = particle->GetPosition();
+        const float r = particle->GetRadius();
 
         size_t indexX = static_cast<size_t>(pos.x / m_CellSize);
         size_t indexY = static_cast<size_t>(pos.y / m_CellSize);
@@ -69,9 +67,9 @@ void Grid::Update(std::vector<Particle*>& sceneParticles, const float dt)
         m_Cells[indexX][indexY].particlesIndices.push_back(i);
 
         // Use the remainder to determine if some particles overlap multiple cells
-        size_t remX = static_cast<size_t>(pos.x) % m_CellSize;
-        size_t remY = static_cast<size_t>(pos.y) % m_CellSize;
-        
+        const size_t remX = static_cast<size_t>(pos.x) % m_CellSize;
+        const size_t remY = static_cast<size_t>(pos.y) % m_CellSize;
+
         if (remX < r)
         {
             size_t index = indexX - 1;
@@ -94,12 +92,10 @@ void Grid::Update(std::vector<Particle*>& sceneParticles, const float dt)
             m_Cells[index_x][index_y].particlesIndices.push_back(i);
         }
     }
+}
 
-    #pragma endregion
-
-    
-    #pragma region CheckCollisions
-
+void Grid::CheckCollisions(const float dt)
+{
     // Iterate over all cells in the grid
     for (size_t x = 0; x < m_NumCellsX; x++)
     {
@@ -116,14 +112,19 @@ void Grid::Update(std::vector<Particle*>& sceneParticles, const float dt)
             {
                 for (size_t j = i + 1; j < cell.particlesIndices.size(); j++)
                 {
-                    Particle* p1 = sceneParticles[cell.particlesIndices[i]];
-                    Particle* p2 = sceneParticles[cell.particlesIndices[j]];
+                    Particle* p1 = m_SceneParticles[cell.particlesIndices[i]];
+                    Particle* p2 = m_SceneParticles[cell.particlesIndices[j]];
 
-                    if (SolveCollision(p1, p2))
+                    if (Collide(p1, p2))
                         ConductHeat(p1, p2, dt);
                 }
             }
         }
     }
-    #pragma endregion
+}
+
+void Grid::Update(const float dt)
+{   
+    PopulateGrid();
+    CheckCollisions(dt);
 }

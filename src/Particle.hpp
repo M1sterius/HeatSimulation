@@ -6,6 +6,7 @@
 class Particle
 {
 private:
+    // Simulation uses Verlet integration
     glm::vec2 m_CurrentPosition;
     glm::vec2 m_OldPosition;
     glm::vec2 m_Acceleration;
@@ -17,7 +18,9 @@ private:
     
     sf::Color GetTemperatureColor();
 public:
+    // If true, particle will not be affected by any forces
     bool isStatic = false;
+    // If true, particles will never lose any heat (but still can conduct it to other particles)
     bool isConstHeat = false;
     float heatTransferCoeff = 9.0f;
 
@@ -32,11 +35,11 @@ public:
     void AddPosition(const glm::vec2& pos);
     void AddCurrentPosition(const glm::vec2& nPos);
 
-    glm::vec2 GetPosition();
-    glm::vec2 GetVelocity();
+    inline glm::vec2 GetPosition() const { return m_CurrentPosition; }
+    inline glm::vec2 GetVelocity() const { return m_CurrentPosition - m_OldPosition; }
     inline float GetTemperature() const { return m_Temperature; }
 
     inline float GetRadius() const { return m_Radius; }
 
-    const sf::CircleShape& GetShape() const;
+    const inline sf::CircleShape& GetShape() const { return m_Shape; }
 };
