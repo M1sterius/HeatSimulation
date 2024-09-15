@@ -14,21 +14,21 @@ set_target_properties(HeatSimulation PROPERTIES
 
 target_compile_definitions(HeatSimulation PRIVATE "SFML_STATIC")
 
-include_directories(
+target_include_directories(HeatSimulation PRIVATE
     ${CMAKE_SOURCE_DIR}/dependencies/SFML/include
     ${CMAKE_SOURCE_DIR}/dependencies/glm
 )
 
-target_link_directories(HeatSimulation PRIVATE 
+target_link_directories(HeatSimulation PRIVATE
     ${CMAKE_SOURCE_DIR}/dependencies/SFML/lib
 )
 
-target_link_libraries(HeatSimulation
-    sfml-window-s # add "-d" postfix for debug build
-    sfml-system-s # add "-d" postfix for debug build
+target_link_libraries(HeatSimulation PRIVATE
+    sfml-window-s-d # add "-d" postfix for debug build
+    sfml-system-s-d # add "-d" postfix for debug build
     opengl32
     freetype
-    sfml-graphics-s # add "-d" postfix for debug build
+    sfml-graphics-s-d # add "-d" postfix for debug build
     winmm
     gdi32
 )

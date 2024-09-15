@@ -26,7 +26,7 @@ private:
     void UpdateParticles(const float dt);
     void CheckBounds();
 public:
-    Scene(size_t winSizeX, size_t winXizeY);
+    Scene(size_t winSizeX, size_t winSizeY);
     ~Scene();
 
     void AddParticle(Particle* ptr);

@@ -1,0 +1,3 @@
+C:/Coding/HeatSimulation/CMakeBuild/CMakeFiles/HeatSimulation.dir
+C:/Coding/HeatSimulation/CMakeBuild/CMakeFiles/edit_cache.dir
+C:/Coding/HeatSimulation/CMakeBuild/CMakeFiles/rebuild_cache.dir
