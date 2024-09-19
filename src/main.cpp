@@ -16,7 +16,7 @@ int main()
     Scene scene = Scene(700, 700);
 
     // Create an array of x * y particles
-    for (size_t x = 0; x < 50; x++)
+    for (size_t x = 0; x < 100; x++)
     {
         for (size_t y = 0; y < 35; y++)
         {
